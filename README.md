@@ -7,3 +7,20 @@
 3.) Spring boot with redis as a database
 
 4.) Sping boot with postgres
+
+
+// Upcoming projects
+spring projects
+
+authentication, security
+
+logging
+
+monitoring,
+
+different protocols, (SOAP), websockets, etc
+
+kafka integration
+
+testing(junit, mocks)
+
