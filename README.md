@@ -8,6 +8,8 @@
 
 4.) Sping boot with postgres
 
+5.) Spring boot authorisation server
+
 
 // Upcoming projects
 spring projects
