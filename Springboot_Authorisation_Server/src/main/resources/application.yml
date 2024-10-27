@@ -1,6 +1,11 @@
 server:
   port: 9001
 
+logging:
+  level:
+    org.springframework.web: "trace"
+    org.springframework: "debug"
+
 spring:
   security:
     oauth2:
