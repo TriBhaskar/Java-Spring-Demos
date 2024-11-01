@@ -27,12 +27,14 @@ public class SecurityConfig {
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/", "/images/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(withDefaults())
-        // configure logout with Auth0
-            .logout(logout -> logout
-                .addLogoutHandler(logoutHandler()));
+
+                // configure logout with Auth0
+                .logout(logout -> logout
+                        .addLogoutHandler(logoutHandler()));
         return http.build();
     }
     private LogoutHandler logoutHandler() {
