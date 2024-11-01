@@ -13,7 +13,7 @@ public class HomeController {
     public String home(Model model, @AuthenticationPrincipal OidcUser principal) {
         return "Login!!Welcome Home";
     }
-    @GetMapping("/logout")
+    @GetMapping("/logoutuser")
     public String logout(Model model, @AuthenticationPrincipal OidcUser principal) {
         return "Logout";
     }
