@@ -20,9 +20,9 @@ Let's get started!
 ? What's the relative directory (with a leading .) for your app? (./src)
 
 ? What's the relative directory (with a leading .) for your app? ./src
-? What version of Java do you want to use? 17.0.7
+? What version of Java do you want to use? 17
 
-? What version of Java do you want to use? 17.0.7
+? What version of Java do you want to use? 17
 ? What port does your server listen on? 8080
 
 ? What port does your server listen on? 8080
