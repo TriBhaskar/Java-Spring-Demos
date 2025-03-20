@@ -10,15 +10,15 @@
 
 5.) Spring boot authorisation server
 
+6.) Spring boot logging and monitoring
+
+7.) Spring boot OAuth2 Okta integration
+
 
 // Upcoming projects
 spring projects
 
 authentication, security
-
-logging
-
-monitoring,
 
 different protocols, (SOAP), websockets, etc
 
