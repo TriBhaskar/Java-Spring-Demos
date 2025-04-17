@@ -1,4 +1,4 @@
-package com.anterka.factory;
+package org.tribhaskar.factory;
 
 /**
  * Vehicle interface - defines the contract for all vehicle products

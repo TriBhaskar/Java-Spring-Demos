@@ -1,4 +1,4 @@
-package com.anterka.factory;
+package org.tribhaskar.factory;
 
 /**
  * Abstract Vehicle Factory class with factory method pattern

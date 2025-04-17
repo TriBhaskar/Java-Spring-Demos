@@ -1,6 +1,6 @@
-package com.anterka;
+package org.tribhaskar;
 
-import com.anterka.factory.*;
+import org.tribhaskar.factory.*;
 
 /**
  * Main class to demonstrate the Factory Design Pattern

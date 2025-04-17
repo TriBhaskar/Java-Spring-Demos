@@ -1,4 +1,4 @@
-package com.anterka.factory;
+package org.tribhaskar.factory;
 
 /**
  * Simple Factory (not a true Factory Method pattern, but commonly used)

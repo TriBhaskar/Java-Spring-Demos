@@ -1,4 +1,4 @@
-package com.anterka.factory;
+package org.tribhaskar.factory;
 
 public class Motorcycle implements Vehicle{
     @Override

@@ -1,4 +1,4 @@
-package com.anterka.factory;
+package org.tribhaskar.factory;
 
 /**
  * Concrete factory for creating Car objects
