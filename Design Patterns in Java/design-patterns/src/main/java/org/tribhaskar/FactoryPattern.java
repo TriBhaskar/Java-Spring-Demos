@@ -5,7 +5,7 @@ import org.tribhaskar.factory.*;
 /**
  * Main class to demonstrate the Factory Design Pattern
  */
-public class Main {
+public class FactoryPattern {
     public static void main(String[] args) {
         System.out.println("Factory Method Pattern Demonstration\n");
 
