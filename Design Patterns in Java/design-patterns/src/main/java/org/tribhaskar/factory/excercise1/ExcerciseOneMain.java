@@ -1,6 +1,6 @@
 package org.tribhaskar.factory.excercise1;
 
-public class ExcerciseMain {
+public class ExcerciseOneMain {
     public static void main(String[] args) {
         Shape shape1 = ShapeFactory.getShape("CIRCLE");
         shape1.draw();  // Output: Drawing a circle
