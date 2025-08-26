@@ -116,6 +116,23 @@ The pre-configured dashboard includes:
 - Custom time ranges
 - Multiple visualization types
 
+# Screenshots
+
+Visual examples of the monitoring stack. Add your own screenshots by placing image files in the repository and updating the paths below.
+
+## Grafana Dashboard
+![img.png](img.png)
+*Example: Spring Boot Monitoring Dashboard in Grafana*
+
+## Prometheus UI
+![img_1.png](img_1.png)
+*Example: Prometheus metrics browser and query interface*
+
+> **How to add screenshots:**
+> 1. Take a screenshot of the Grafana dashboard or Prometheus UI.
+> 2. Save the image in the appropriate folder (e.g., `grafana/screenshots/` or `prometheus/screenshots/`).
+> 3. Update the image path in this section if needed.
+
 ## Configuration Files
 
 ### Docker Compose (`docker-compose.yml`)
