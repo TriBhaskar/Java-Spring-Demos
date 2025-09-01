@@ -14,6 +14,8 @@
 
 7.) Spring boot OAuth2 Okta integration
 
+8.) Springboot_Monitoring_Grafana
+
 
 // Upcoming projects
 spring projects
@@ -25,4 +27,5 @@ different protocols, (SOAP), websockets, etc
 kafka integration
 
 testing(junit, mocks)
+
 
