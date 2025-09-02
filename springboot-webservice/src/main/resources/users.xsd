@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:tns="http://anterka.com/users"
-           targetNamespace="http://anterka.com/users"
+           xmlns:tns="http://www.anterka.com/users"
+           targetNamespace="http://www.anterka.com/users"
            elementFormDefault="qualified">
 
     <!-- User Type -->
