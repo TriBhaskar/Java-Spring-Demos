@@ -3,6 +3,9 @@ package com.anterka.webservice;
 import com.anterka.users.*;
 import com.anterka.webservice.model.User;
 import com.anterka.webservice.service.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -24,7 +27,9 @@ public class UserEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getUserRequest")
     @ResponsePayload
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public GetUserResponse getUser(@RequestPayload GetUserRequest request) {
+        logAuthenticatedUser("getUser");
         GetUserResponse response = new GetUserResponse();
         Optional<User> userOptional = userService.getUserById(request.getId());
 
@@ -44,7 +49,9 @@ public class UserEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getAllUsersRequest")
     @ResponsePayload
+    @PreAuthorize("hasRole('ADMIN')")
     public GetAllUsersResponse getAllUsers(@RequestPayload GetAllUsersRequest request) {
+        logAuthenticatedUser("getAllUsers");
         GetAllUsersResponse response = new GetAllUsersResponse();
         List<User> users = userService.getAllUsers();
 
@@ -63,7 +70,9 @@ public class UserEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "createUserRequest")
     @ResponsePayload
+    @PreAuthorize("hasRole('ADMIN')")
     public CreateUserResponse createUser(@RequestPayload CreateUserRequest request) {
+        logAuthenticatedUser("createUser");
         CreateUserResponse response = new CreateUserResponse();
 
         User user = new User();
@@ -87,7 +96,9 @@ public class UserEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "updateUserRequest")
     @ResponsePayload
+    @PreAuthorize("hasRole('ADMIN')")
     public UpdateUserResponse updateUser(@RequestPayload UpdateUserRequest request) {
+        logAuthenticatedUser("updateUser");
         UpdateUserResponse response = new UpdateUserResponse();
 
         com.anterka.users.User requestUser = request.getUser();
@@ -114,10 +125,19 @@ public class UserEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "deleteUserRequest")
     @ResponsePayload
+    @PreAuthorize("hasRole('ADMIN')")
     public DeleteUserResponse deleteUser(@RequestPayload DeleteUserRequest request) {
+        logAuthenticatedUser("deleteUser");
         DeleteUserResponse response = new DeleteUserResponse();
         userService.deleteUser(request.getId());
         response.setStatus("Success");
         return response;
+    }
+
+    private void logAuthenticatedUser(String operation) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            System.out.println("User '" + authentication.getName() + "' performed operation: " + operation);
+        }
     }
 }
