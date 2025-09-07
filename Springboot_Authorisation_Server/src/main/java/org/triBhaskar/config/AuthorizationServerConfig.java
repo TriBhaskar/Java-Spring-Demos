@@ -8,6 +8,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -29,6 +30,7 @@ import org.springframework.security.oauth2.server.authorization.settings.ClientS
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -39,30 +41,39 @@ import java.util.UUID;
 @Configuration
 @EnableWebSecurity
 public class AuthorizationServerConfig {
-
+    @Bean
     @Order(1)
-    @Bean
-    public SecurityFilterChain webSecurityFilterChainOAuth(HttpSecurity httpSecurity) throws Exception {
-        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(httpSecurity);
-        httpSecurity.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-                .oidc(Customizer.withDefaults());
+    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
+                OAuth2AuthorizationServerConfigurer.authorizationServer();
+        http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+                .with(authorizationServerConfigurer, (authorizationServer) ->
+                        authorizationServer
+                                .oidc(oidc -> {
+                    oidc.clientRegistrationEndpoint(Customizer.withDefaults());
+                }));
 
-        httpSecurity.exceptionHandling(e -> e.authenticationEntryPoint(
-                new LoginUrlAuthenticationEntryPoint("/login")
-        ));
-
-        return httpSecurity.build();
-    }
-
-    @Order(2)
-    @Bean
-    public SecurityFilterChain webSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authorizeRequests ->
-                authorizeRequests.anyRequest().authenticated()
+        http.exceptionHandling((exceptions) -> exceptions
+                .defaultAuthenticationEntryPointFor(
+                        new LoginUrlAuthenticationEntryPoint("/login"),
+                        new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
+                )
         );
-        http.formLogin(Customizer.withDefaults());
+
+        http.oauth2ResourceServer((resourceServer) -> resourceServer
+                .jwt(Customizer.withDefaults()));
+
         return http.build();
     }
+
+    @Bean
+    @Order(2)
+    SecurityFilterChain loginFilterChain(HttpSecurity http) throws Exception {
+        return http.authorizeHttpRequests(r -> r.anyRequest().authenticated())
+                .formLogin(Customizer.withDefaults())
+                .build();
+    }
+
 
     @Bean
     public UserDetailsService userDetailsService(){
@@ -82,11 +93,13 @@ public class AuthorizationServerConfig {
     // these are the values of client which will access the authroization server
     @Bean
     public RegisteredClientRepository registeredClientRepository(){
-        var registerClient = RegisteredClient.withId(UUID.randomUUID().toString())
+        RegisteredClient registerClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("public-client-react")
                 .clientSecret("secret")
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
+                .scope("client.create")
+                .scope("client.read")
                 .redirectUri("http://127.0.0.1:8083/login/oauth2/code/public-client-react")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
