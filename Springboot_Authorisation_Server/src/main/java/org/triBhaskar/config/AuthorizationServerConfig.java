@@ -100,7 +100,7 @@ public class AuthorizationServerConfig {
                 .scope(OidcScopes.PROFILE)
                 .scope("client.create")
                 .scope("client.read")
-                .redirectUri("http://127.0.0.1:8083/login/oauth2/code/public-client-react")
+                .redirectUri("https://oauthdebugger.com/debug")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
