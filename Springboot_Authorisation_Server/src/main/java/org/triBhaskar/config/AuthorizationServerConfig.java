@@ -13,6 +13,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +33,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
+import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
@@ -41,17 +43,17 @@ import java.util.UUID;
 @Configuration
 @EnableWebSecurity
 public class AuthorizationServerConfig {
+
     @Bean
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
                 OAuth2AuthorizationServerConfigurer.authorizationServer();
+
         http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                 .with(authorizationServerConfigurer, (authorizationServer) ->
                         authorizationServer
-                                .oidc(oidc -> {
-                    oidc.clientRegistrationEndpoint(Customizer.withDefaults());
-                }));
+                                .oidc(Customizer.withDefaults()));
 
         http.exceptionHandling((exceptions) -> exceptions
                 .defaultAuthenticationEntryPointFor(
@@ -68,21 +70,20 @@ public class AuthorizationServerConfig {
 
     @Bean
     @Order(2)
-    SecurityFilterChain loginFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain loginFilterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(r -> r.anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
                 .build();
     }
 
-
     @Bean
     public UserDetailsService userDetailsService(){
-        var userDetailsService = User.withUsername("bhaskar")
+        UserDetails userDetails = User.withUsername("bhaskar")
                 .password("password")
                 .authorities("read")
                 .build();
 
-        return new InMemoryUserDetailsManager(userDetailsService);
+        return new InMemoryUserDetailsManager(userDetails);
     }
 
     @Bean
@@ -90,7 +91,6 @@ public class AuthorizationServerConfig {
         return NoOpPasswordEncoder.getInstance();
     }
 
-    // these are the values of client which will access the authroization server
     @Bean
     public RegisteredClientRepository registeredClientRepository(){
         RegisteredClient registerClient = RegisteredClient.withId(UUID.randomUUID().toString())
@@ -101,16 +101,14 @@ public class AuthorizationServerConfig {
                 .scope("client.create")
                 .scope("client.read")
                 .redirectUri("https://oauthdebugger.com/debug")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
-                .authorizationGrantTypes(
-                        grantTypes -> {
-                            grantTypes.add(AuthorizationGrantType.AUTHORIZATION_CODE);
-                            grantTypes.add(AuthorizationGrantType.REFRESH_TOKEN);
-                            grantTypes.add(AuthorizationGrantType.CLIENT_CREDENTIALS);
-                        }
-                ).clientSettings(ClientSettings.builder().requireProofKey(true).build())
+                .authorizationGrantTypes(grantTypes -> {
+                    grantTypes.add(AuthorizationGrantType.AUTHORIZATION_CODE);
+                    grantTypes.add(AuthorizationGrantType.REFRESH_TOKEN);
+                    grantTypes.add(AuthorizationGrantType.CLIENT_CREDENTIALS);
+                })
+                .clientSettings(ClientSettings.builder().requireProofKey(true).build())
                 .build();
 
         return new InMemoryRegisteredClientRepository(registerClient);
@@ -118,29 +116,40 @@ public class AuthorizationServerConfig {
 
     @Bean
     public AuthorizationServerSettings authorizationServerSettings(){
-        return AuthorizationServerSettings.builder().build();
+        return AuthorizationServerSettings.builder()
+                .issuer("http://localhost:9000")  // Add issuer URL
+                .build();
     }
 
     @Bean
-    public JWKSource<SecurityContext> jwkSource() throws NoSuchAlgorithmException {
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(2048);
+    public JWKSource<SecurityContext> jwkSource() {
+        RSAKey rsaKey = generateRSAKey();
+        JWKSet jwkSet = new JWKSet(rsaKey);
+        return new ImmutableJWKSet<>(jwkSet);
+    }
 
-        var keys = keyPairGenerator.generateKeyPair();
-        var publicKey = (RSAPublicKey) keys.getPublic();
-        var privateKey = (RSAPrivateKey) keys.getPrivate();
+    @Bean
+    public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource){
+        return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
+    }
 
-        var rsaKey = new RSAKey.Builder(publicKey)
+    private RSAKey generateRSAKey() {
+        KeyPair keyPair = generateKeyPair();
+        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+        return new RSAKey.Builder(publicKey)
                 .privateKey(privateKey)
                 .keyID(UUID.randomUUID().toString())
                 .build();
-
-        JWKSet jwkSet = new JWKSet(rsaKey);
-        return new ImmutableJWKSet<>(jwkSet);
-
     }
 
-    public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource){
-        return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
+    private KeyPair generateKeyPair() {
+        try {
+            KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+            generator.initialize(2048);
+            return generator.generateKeyPair();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 }
