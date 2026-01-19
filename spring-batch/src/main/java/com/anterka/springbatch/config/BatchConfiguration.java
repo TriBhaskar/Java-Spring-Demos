@@ -67,7 +67,7 @@ public class BatchConfiguration {
     @Bean
     public Step processPayrollStep() {
         return new StepBuilder("processPayrollStep", jobRepository)
-                .<EmployeeTimesheet, PayrollRecord>chunk(10, transactionManager)
+                .<EmployeeTimesheet, PayrollRecord>chunk(10)
                 .reader(timesheetReader())
                 .processor(payrollItemProcessor)
                 .writer(payrollWriter())
