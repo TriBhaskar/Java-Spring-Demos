@@ -1,0 +1,16 @@
+employeeId,employeeName,department,hoursWorked,hourlyRate,month,year
+1001,John Smith,Engineering,175,45.00,December,2024
+1002,Sarah Johnson,Engineering,160,50.00,December,2024
+1003,Michael Brown,Marketing,155,40.00,December,2024
+1004,Emily Davis,Sales,180,42.00,December,2024
+1005,David Wilson,Engineering,165,48.00,December,2024
+1006,Jennifer Martinez,HR,160,38.00,December,2024
+1007,Robert Anderson,Finance,170,52.00,December,2024
+1008,Lisa Taylor,Marketing,158,41.00,December,2024
+1009,James Thomas,Sales,185,43.00,December,2024
+1010,Mary Jackson,Engineering,162,47.00,December,2024
+1011,Christopher White,Finance,168,51.00,December,2024
+1012,Patricia Harris,HR,160,39.00,December,2024
+1013,Daniel Martin,Engineering,172,46.00,December,2024
+1014,Barbara Thompson,Marketing,157,40.00,December,2024
+1015,Matthew Garcia,Sales,178,44.00,December,2024
